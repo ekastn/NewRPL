@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import Insights from './components/Insights';
 import MyTeam from './components/MyTeam';
 import Settings from './components/Settings';
+import Meetings from './components/Meetings';
+import MeetingRoom from './components/MeetingRoom';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -137,6 +139,13 @@ function App() {
             } 
           />
           <Route 
+          path="/meetings" 
+          element={
+          <Meetings />
+          } 
+          />
+
+          <Route 
             path="/settings" 
             element={
               <ProtectedRoute>
@@ -144,6 +153,9 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route path="/meeting-room/:meetingId" element={<MeetingRoom />} />
+          
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>

@@ -8,7 +8,7 @@ function Sidebar() {
     const location = useLocation();
     const navigate = useNavigate();
     const [showLogout, setShowLogout] = useState(false);
-    
+
     // Determine active route
     const isActive = (path) => {
         return location.pathname === path;
@@ -18,12 +18,12 @@ function Sidebar() {
         if (!name) return '?';
         return name.charAt(0).toUpperCase();
     };
-    
+
     const handleLogout = () => {
         logoutUser();
         navigate('/login');
     };
-    
+
     const toggleLogout = () => {
         setShowLogout(!showLogout);
     };
@@ -46,9 +46,10 @@ function Sidebar() {
                         <span>My Team</span>
                     </Link>
                 </li>
-		<li className={isActive('/meetings') ? 'active' : ''}>
-                    <Link to="/meetings" className="nav-link">
-                        <i className="icon-meetings"></i> Meetings
+                <li className={isActive('/meetings') ? 'active' : ''}>
+                    <Link to="/meetings" className={({ isActive }) => isActive ? 'active' : ''}>
+                        <i className="fas fa-video"></i>
+                        <span>Meetings</span>
                     </Link>
                 </li>
                 <li className={isActive('/insights') ? 'active' : ''}>
@@ -68,10 +69,10 @@ function Sidebar() {
                 <div className="sidebar-profile" onClick={toggleLogout}>
                     <div className="profile-info">
                         {user?.profileImage ? (
-                            <img 
-                                src={user.profileImage} 
-                                alt="Profile" 
-                                className="profile-avatar" 
+                            <img
+                                src={user.profileImage}
+                                alt="Profile"
+                                className="profile-avatar"
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.style.display = "none";
@@ -87,7 +88,7 @@ function Sidebar() {
                         <div className="profile-role">{user?.role || 'Team Member'}</div>
                     </div>
                 </div>
-                
+
                 {showLogout && (
                     <div className="logout-popup">
                         <button onClick={handleLogout} className="logout-button">
