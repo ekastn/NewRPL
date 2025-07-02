@@ -21,9 +21,11 @@ function MeetingRoom() {
     const [pinnedUser, setPinnedUser] = useState(null);
     const [lastEmotion, setLastEmotion] = useState(null);
 
-
+    // Tambahkan ref untuk video element yang di-pin
     const videoRef = useRef();
+    const pinnedVideoRef = useRef(); 
     const canvasRef = useRef();
+    const pinnedCanvasRef = useRef();
     const streamRef = useRef();
     const detectionIntervalRef = useRef();
 
@@ -122,6 +124,11 @@ function MeetingRoom() {
             if (videoRef.current) {
                 console.log("Setting video source...");
                 videoRef.current.srcObject = stream;
+
+                // Set the same stream to pinnedVideoRef if it exists
+                if (pinnedVideoRef.current) {
+                    pinnedVideoRef.current.srcObject = stream;
+                }
 
                 // Listen for video to start playing
                 videoRef.current.onloadedmetadata = () => {
@@ -234,10 +241,47 @@ function MeetingRoom() {
                         }
                     }
                 }
+                
+                // Jika ada pinnedCanvasRef dan video saya sendiri di-pin, lakukan deteksi juga
+                if (pinnedCanvasRef.current && pinnedUser && pinnedUser.isCurrentUser) {
+                    updatePinnedCanvas(resizedDetections);
+                }
             } catch (error) {
                 console.error("Error in face detection:", error);
             }
         }, 200); // Increased interval to reduce CPU usage
+    };
+    
+    // Fungsi baru untuk memperbarui canvas yang di-pin
+    const updatePinnedCanvas = (resizedDetections) => {
+        if (!pinnedCanvasRef.current || !pinnedVideoRef.current) return;
+        
+        const canvas = pinnedCanvasRef.current;
+        canvas.width = pinnedVideoRef.current.clientWidth;
+        canvas.height = pinnedVideoRef.current.clientHeight;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Sesuaikan ukuran deteksi untuk canvas yang di-pin
+        const pinnedDetections = faceapi.resizeResults(resizedDetections, {
+            width: canvas.width,
+            height: canvas.height
+        });
+        
+        if (pinnedDetections.length > 0) {
+            // Gambar kotak wajah
+            faceapi.draw.drawDetections(canvas, pinnedDetections);
+            
+            // Gambar ekspresi jika tersedia
+            if (pinnedDetections[0].expressions) {
+                try {
+                    faceapi.draw.drawFaceExpressions(canvas, pinnedDetections, 0.05);
+                } catch (drawError) {
+                    console.warn("Could not draw expressions on pinned canvas:", drawError);
+                }
+            }
+        }
     };
 
     // Tambahkan fungsi ini untuk mendapatkan emoji berdasarkan emosi
@@ -305,6 +349,12 @@ function MeetingRoom() {
 
             streamRef.current = screenStream;
             videoRef.current.srcObject = screenStream;
+            
+            // Update pinned video if it's me
+            if (pinnedVideoRef.current && pinnedUser && pinnedUser.isCurrentUser) {
+                pinnedVideoRef.current.srcObject = screenStream;
+            }
+            
             setIsScreenSharing(true);
         } catch (error) {
             console.error('Error sharing screen:', error);
@@ -346,7 +396,24 @@ function MeetingRoom() {
     };
 
     const togglePin = (participant) => {
-        setPinnedUser(pinnedUser?.id === participant.id ? null : participant);
+        // Update video stream jika pinnedUser berubah
+        if (participant.isCurrentUser) {
+            setPinnedUser(participant);
+            
+            // Pastikan setTimeout untuk memastikan DOM sudah dirender
+            setTimeout(() => {
+                if (pinnedVideoRef.current && streamRef.current) {
+                    pinnedVideoRef.current.srcObject = streamRef.current;
+                    
+                    // Play video secara otomatis
+                    pinnedVideoRef.current.play().catch(e => 
+                        console.error("Error playing pinned video:", e)
+                    );
+                }
+            }, 100);
+        } else {
+            setPinnedUser(pinnedUser?.id === participant.id ? null : participant);
+        }
         setMenuOpen(null);
     };
 
@@ -399,13 +466,13 @@ function MeetingRoom() {
                                     ) : (
                                         <>
                                             <video
-                                                ref={videoRef}
+                                                ref={pinnedVideoRef}
                                                 autoPlay
                                                 playsInline
-                                                muted={pinnedUser.isCurrentUser}
+                                                muted
                                                 className={isVideoOff ? 'hidden' : ''}
                                             />
-                                            <canvas ref={canvasRef} className="face-canvas" />
+                                            <canvas ref={pinnedCanvasRef} className="face-canvas" />
                                             {isVideoOff && (
                                                 <div className="video-off-placeholder">
                                                     <span>{user?.nama?.charAt(0) || 'Y'}</span>
@@ -454,13 +521,13 @@ function MeetingRoom() {
                                         ) : !pinnedUser && (
                                             <>
                                                 <video
-                                                    ref={pinnedUser ? null : videoRef}
+                                                    ref={videoRef}
                                                     autoPlay
                                                     playsInline
                                                     muted
                                                     className={isVideoOff ? 'hidden' : ''}
                                                 />
-                                                <canvas ref={pinnedUser ? null : canvasRef} className="face-canvas" />
+                                                <canvas ref={canvasRef} className="face-canvas" />
                                                 {isVideoOff && (
                                                     <div className="video-off-placeholder">
                                                         <span>{user?.nama?.charAt(0) || 'Y'}</span>
