@@ -143,6 +143,14 @@
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
+    width: 40px; /* Pastikan lebar tetap */
+    height: 40px; /* Pastikan tinggi sama dengan lebar */
+    border-radius: 50%; /* Membuat lingkaran sempurna */
+    display: flex; /* Menggunakan flexbox untuk pemusatan */
+    justify-content: center; /* Pusatkan secara horizontal */
+    align-items: center; /* Pusatkan secara vertikal */
+    aspect-ratio: 1/1; /* Memastikan rasio aspek 1:1 */
+    margin: 0 auto; /* Pusatkan dalam sel grid */
 }
 
 .day:hover {
@@ -157,12 +165,28 @@
     background-color: #e1dbff;
     color: #6c5ce7;
     font-weight: bold;
+    width: 40px; /* Pastikan lebar tetap */
+    height: 40px; /* Pastikan tinggi sama dengan lebar */
+    border-radius: 50%; /* Membuat lingkaran sempurna */
+    display: flex; /* Menggunakan flexbox untuk pemusatan */
+    justify-content: center; /* Pusatkan secara horizontal */
+    align-items: center; /* Pusatkan secara vertikal */
+    aspect-ratio: 1/1; /* Memastikan rasio aspek 1:1 */
+    margin: 0 auto; /* Pusatkan dalam sel grid */
 }
 
 .day.selected {
     background-color: #6c5ce7;
     color: white;
     font-weight: bold;
+    width: 40px; /* Pastikan lebar tetap */
+    height: 40px; /* Pastikan tinggi sama dengan lebar */
+    border-radius: 50%; /* Membuat lingkaran sempurna */
+    display: flex; /* Menggunakan flexbox untuk pemusatan */
+    justify-content: center; /* Pusatkan secara horizontal */
+    align-items: center; /* Pusatkan secara vertikal */
+    aspect-ratio: 1/1; /* Memastikan rasio aspek 1:1 */
+    margin: 0 auto; /* Pusatkan dalam sel grid */
 }
 
 /* Meetings Section */
