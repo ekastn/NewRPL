@@ -1,9 +1,10 @@
 // filepath: d:\KULIAH\SEMESTER 4\Rekayasa Perangkat Lunak\code\NewRPL\frontend\src\components\Dashboard.jsx
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Sidebar from './Sidebar';
 import '../styles/Dashboard.css';
+
 
 // Import EmotionChart secara kondisional untuk menghindari error di awal
 let EmotionChart = () => <div>Loading chart component...</div>;
@@ -222,7 +223,7 @@ function Dashboard() {
                         <div className="dashboard-card upcoming-meetings">
                             <div className="card-header">
                                 <h3>Upcoming Meetings</h3>
-                                <a href="#" className="view-all">View All</a>
+                                <Link to="/meetings" className="view-all">View All</Link>
                             </div>
                             <div className="meetings-list">
                                 <div className="meeting-item">

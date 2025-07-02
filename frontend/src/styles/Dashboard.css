@@ -21,22 +21,22 @@
 
 .mood-selection {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .mood-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  padding: 15px 10px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
-  flex: 1;
-  min-width: 60px;
+  width: 80px;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .mood-option:hover {
@@ -57,20 +57,21 @@
 .mood-note {
   width: 100%;
   height: 80px;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border-radius: 8px;
   resize: none;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   font-family: inherit;
+  font-size: 14px;
 }
 
 .submit-button {
   background-color: #6c5ce7;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
+  border-radius: 5px;
+  padding: 10px 25px;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -85,10 +86,63 @@
   cursor: not-allowed;
 }
 
+/* Meetings list styling */
+.meetings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.meeting-item {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 15px;
+  transition: transform 0.2s;
+}
+
+.meeting-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.meeting-time {
+  min-width: 80px;
+  text-align: center;
+  background-color: #6c5ce7;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+
+.time {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.btn-join {
+  background-color: #6c5ce7;
+}
+
+.btn-join:hover {
+  background-color: #5a4ad6;
+}
+
+.btn-schedule {
+  background-color: #74b9ff;
+}
+
+.btn-schedule:hover {
+  background-color: #5da5eb;
+}
+
+
 /* Style untuk pesan notifikasi */
 .message {
-  padding: 10px;
-  border-radius: 4px;
+  padding: 12px;
+  border-radius: 6px;
   margin-bottom: 15px;
   font-size: 14px;
 }
@@ -107,13 +161,52 @@
 
 /* Style untuk grafik emosi */
 .team-emotion {
-  grid-column: span 2;
+  grid-column: 1; /* Place on the left */
+}
+
+.upcoming-meetings {
+  grid-column: 2; /* Place on the right */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sub-title {
+  color: #888;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
 }
 
 .emotion-chart {
   position: relative;
   height: 250px;
   padding-top: 20px;
+}
+
+.view-all {
+  color: #6c5ce7;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.view-all:hover {
+  color: #5a4ad6;
+  text-decoration: underline;
 }
 
 .chart-loading {
@@ -133,7 +226,6 @@
   animation: spin 1s linear infinite;
   margin-bottom: 10px;
 }
-
 
 
 .logout-button {
@@ -156,16 +248,70 @@
 }
 
 .welcome-section {
-  background-color: #f5f5f5;
-  padding: 2rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+  background-color: white;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-text {
+  flex: 1;
+}
+
+.welcome-text h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
+}
+
+.welcome-text p {
+  color: #666;
+  margin: 0;
 }
 
 .welcome-section h2 {
   margin-top: 0;
   color: #333;
+}
+
+.day {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.meeting-details {
+  flex: 1;
+  padding: 0 15px;
+}
+
+.meeting-details h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.meeting-details p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 30px;
+}
+
+.dashboard-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  height: 100%;
 }
 
 .dashboard-content {
@@ -194,19 +340,17 @@
 }
 
 .emotion-check-in {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  padding: 20px;
-  margin-top: 20px;
+  flex: 1;
+  padding-left: 30px;
 }
 
 .emotion-check-in h3 {
   margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
 }
-
 
 @keyframes spin {
   0% {
@@ -224,6 +368,45 @@
   height: 200px;
   color: #666;
   font-style: italic;
+}
+
+@media (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Stack on smaller screens */
+  }
+  
+  .team-emotion,
+  .upcoming-meetings {
+    grid-column: 1; /* Both take full width */
+  }
+  
+  .welcome-section {
+    flex-direction: column;
+  }
+  
+  .emotion-check-in {
+    padding-left: 0;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-left: 70px;
+    padding: 15px;
+  }
+  
+  .mood-selection {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .mood-option {
+    width: 70px;
+    padding: 10px 5px;
+  }
 }
 /* Tambahkan style berikut ke CSS yang sudah ada */
 
