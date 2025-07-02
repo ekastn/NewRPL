@@ -20,6 +20,8 @@ function MeetingRoom() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [pinnedUser, setPinnedUser] = useState(null);
     const [lastEmotion, setLastEmotion] = useState(null);
+    const [isLeaving, setIsLeaving] = useState(false); // State baru untuk animasi ketika leaving
+    const [waitingForOthers, setWaitingForOthers] = useState(true); // State untuk menunjukkan menunggu peserta lain
 
     // Tambahkan ref untuk video element yang di-pin
     const videoRef = useRef();
@@ -29,25 +31,7 @@ function MeetingRoom() {
     const streamRef = useRef();
     const detectionIntervalRef = useRef();
 
-    // Mock participants data - in a real app, this would come from your backend
-    const mockParticipants = [
-        { id: 1, name: 'Nabil Rashad', image: 'https://randomuser.me/api/portraits/men/32.jpg', isSpeaking: false },
-        { id: 2, name: 'Jada Grimes', image: 'https://randomuser.me/api/portraits/women/44.jpg', isSpeaking: false },
-        { id: 3, name: 'Josh Nelson', image: 'https://randomuser.me/api/portraits/men/55.jpg', isSpeaking: false },
-        { id: 4, name: 'Dayami Yoshino', image: 'https://randomuser.me/api/portraits/women/66.jpg', isSpeaking: false },
-        { id: 5, name: 'Tanya Hartz', image: 'https://randomuser.me/api/portraits/women/89.jpg', isSpeaking: false },
-        { id: 6, name: 'Victoria Reyes', image: 'https://randomuser.me/api/portraits/women/29.jpg', isSpeaking: false },
-        { id: 7, name: 'Casey Cunningham', image: 'https://randomuser.me/api/portraits/men/78.jpg', isSpeaking: false },
-        {
-            id: 'marketing-huddle', name: 'Marketing Huddle', isGroup: true, members: [
-                { id: 101, name: 'Emma Chen', image: 'https://randomuser.me/api/portraits/women/33.jpg' },
-                { id: 102, name: 'Mike Roberts', image: 'https://randomuser.me/api/portraits/men/41.jpg' },
-                { id: 103, name: 'Alex Kim', image: 'https://randomuser.me/api/portraits/men/52.jpg' }
-            ]
-        }
-    ];
-
-    // Load face-api models
+    // Load face-api models dan inisialisasi video
     useEffect(() => {
         const loadModelsAndStartVideo = async () => {
             setIsLoading(true);
@@ -78,18 +62,32 @@ function MeetingRoom() {
             }
         };
 
-        // Add current user and mock participants
-        setParticipants([
-            {
-                id: 'current-user',
-                name: user?.nama || 'You',
-                isCurrentUser: true,
-                image: user?.profileImage || null
-            },
-            ...mockParticipants
-        ]);
+        // Add only current user to participants
+        if (user) {
+            setParticipants([
+                {
+                    id: 'current-user',
+                    name: user.nama || 'You',
+                    isCurrentUser: true,
+                    image: user.profileImage || null
+                }
+            ]);
+        }
 
         loadModelsAndStartVideo();
+
+        // Simulasi pesan sistem untuk menunjukkan bahwa user adalah satu-satunya peserta
+        setTimeout(() => {
+            setMessages([
+                {
+                    id: Date.now(),
+                    sender: 'System',
+                    text: 'You are the only participant in this meeting. Share the meeting link for others to join.',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    isSystem: true
+                }
+            ]);
+        }, 2000);
 
         return () => {
             // Cleanup when component unmounts
@@ -174,7 +172,7 @@ function MeetingRoom() {
 
         // Run face detection at regular intervals
         detectionIntervalRef.current = setInterval(async () => {
-            if (videoEl.paused || videoEl.ended) {
+            if (videoEl.paused || videoEl.ended || isLeaving) {
                 return;
             }
 
@@ -252,7 +250,7 @@ function MeetingRoom() {
         }, 200); // Increased interval to reduce CPU usage
     };
     
-    // Fungsi baru untuk memperbarui canvas yang di-pin
+    // Fungsi untuk memperbarui canvas yang di-pin
     const updatePinnedCanvas = (resizedDetections) => {
         if (!pinnedCanvasRef.current || !pinnedVideoRef.current) return;
         
@@ -284,7 +282,7 @@ function MeetingRoom() {
         }
     };
 
-    // Tambahkan fungsi ini untuk mendapatkan emoji berdasarkan emosi
+    // Fungsi untuk mendapatkan emoji berdasarkan emosi
     const getEmotionEmoji = (emotion) => {
         if (!emotion) return '😐';
 
@@ -299,8 +297,6 @@ function MeetingRoom() {
             default: return '😐';
         }
     };
-
-    // Kemudian perbarui bagian emotion indicator
 
     const toggleMute = () => {
         if (streamRef.current) {
@@ -376,19 +372,53 @@ function MeetingRoom() {
         setNewMessage('');
     };
 
+    const copyMeetingLink = () => {
+    const meetingUrl = window.location.href;
+    navigator.clipboard.writeText(meetingUrl).then(() => {
+        // Sembunyikan waiting message
+        setWaitingForOthers(false);
+        
+        // Tambahkan pesan sistem bahwa link sudah disalin
+        setMessages(prev => [
+            ...prev, 
+            {
+                id: Date.now(),
+                sender: 'System',
+                text: 'Meeting link copied to clipboard! Share it with others to invite them.',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isSystem: true
+            }
+        ]);
+    });
+};
+
     const leaveMeeting = () => {
-        // Stop all tracks
+        // Tampilkan overlay dan matikan kamera
+        setIsLeaving(true);
+
+        // Matikan video
         if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
+            const videoTracks = streamRef.current.getVideoTracks();
+            videoTracks.forEach(track => {
+                track.enabled = false;
+            });
         }
 
-        // Clear detection interval
-        if (detectionIntervalRef.current) {
-            clearInterval(detectionIntervalRef.current);
-        }
-
-        // Navigate back to meetings
-        navigate('/meetings');
+        // Berikan waktu untuk menampilkan overlay "Camera Off"
+        setTimeout(() => {
+            // Stop all tracks
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+            }
+    
+            // Clear detection interval
+            if (detectionIntervalRef.current) {
+                clearInterval(detectionIntervalRef.current);
+            }
+    
+            // Navigate back to meetings
+            navigate('/meetings');
+        }, 1500);
     };
 
     const toggleMenu = (participantId) => {
@@ -417,9 +447,9 @@ function MeetingRoom() {
         setMenuOpen(null);
     };
 
-    const removeSpotlight = () => {
+    // Fungsi untuk unpin user
+    const unpinUser = () => {
         setPinnedUser(null);
-        setMenuOpen(null);
     };
 
     const getDominantEmotion = () => {
@@ -450,15 +480,36 @@ function MeetingRoom() {
     return (
         <div className="meeting-room">
             <header className="meeting-header">
-                <h2>Zoom Meeting</h2>
+                <h2>Meeting: {meetingId}</h2>
+                <div className="meeting-info">
+                    <button className="copy-link-btn" onClick={copyMeetingLink}>
+                        <i className="fas fa-link"></i> Copy Meeting Link
+                    </button>
+                </div>
             </header>
 
             <div className="meeting-content">
                 {/* Participants gallery */}
                 <div className="participants-gallery">
+                    {waitingForOthers && participants.length === 1 && !pinnedUser && (
+                        <div className={`waiting-message ${!waitingForOthers ? 'hidden' : ''}`}>
+                            <i className="fas fa-users"></i>
+                            <h3>You're the only one here</h3>
+                            <p>Share the meeting link to invite others</p>
+                            <button className="copy-meeting-link" onClick={copyMeetingLink}>
+                                <i className="fas fa-copy"></i> Copy Meeting Link
+                            </button>
+                        </div>
+                    )}
+                    
                     {/* Pinned participant (if any) */}
                     {pinnedUser && (
                         <div className="pinned-participant">
+                            {/* Tombol Unpin */}
+                            <button className="unpin-button" onClick={unpinUser}>
+                                <i className="fas fa-times"></i> Unpin
+                            </button>
+
                             {pinnedUser.isCurrentUser ? (
                                 <div className="video-container current-user-video">
                                     {isLoading ? (
@@ -485,24 +536,7 @@ function MeetingRoom() {
                                         </>
                                     )}
                                 </div>
-                            ) : (
-                                <div className="video-container">
-                                    {pinnedUser.isGroup ? (
-                                        <div className="group-container">
-                                            {pinnedUser.members.map(member => (
-                                                <div key={member.id} className="group-member">
-                                                    <img src={member.image} alt={member.name} />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <img src={pinnedUser.image} alt={pinnedUser.name} />
-                                    )}
-                                    <div className="participant-info">
-                                        <span className="participant-name">{pinnedUser.name}</span>
-                                    </div>
-                                </div>
-                            )}
+                            ) : null}
                         </div>
                     )}
 
@@ -536,17 +570,7 @@ function MeetingRoom() {
                                             </>
                                         )}
                                     </>
-                                ) : participant.isGroup ? (
-                                    <div className="group-container">
-                                        {participant.members.map(member => (
-                                            <div key={member.id} className="group-member">
-                                                <img src={member.image} alt={member.name} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <img src={participant.image} alt={participant.name} />
-                                )}
+                                ) : null}
 
                                 <div className="participant-info">
                                     {participant.isCurrentUser && isMuted && (
@@ -564,11 +588,6 @@ function MeetingRoom() {
                                         <button onClick={() => togglePin(participant)}>
                                             <i className="fas fa-thumbtack"></i> Pin
                                         </button>
-                                        {participant.id === pinnedUser?.id && (
-                                            <button onClick={removeSpotlight}>
-                                                <i className="fas fa-times"></i> Remove Spotlight
-                                            </button>
-                                        )}
                                     </div>
                                 )}
                             </div>
@@ -576,43 +595,41 @@ function MeetingRoom() {
                     </div>
                 </div>
 
-                {/* Chat panel */}
-                {isChatOpen && (
-                    <div className="chat-panel">
-                        <div className="chat-header">
-                            <h3>Chat</h3>
-                            <button className="close-chat" onClick={() => setIsChatOpen(false)}>
-                                <i className="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div className="chat-messages">
-                            {messages.length === 0 ? (
-                                <div className="no-messages">No messages yet</div>
-                            ) : (
-                                messages.map(msg => (
-                                    <div key={msg.id} className="chat-message">
-                                        <div className="message-header">
-                                            <span className="message-sender">{msg.sender}</span>
-                                            <span className="message-time">{msg.time}</span>
-                                        </div>
-                                        <div className="message-text">{msg.text}</div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                        <form className="chat-input" onSubmit={sendMessage}>
-                            <input
-                                type="text"
-                                placeholder="Type a message..."
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                            />
-                            <button type="submit">
-                                <i className="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
+                {/* Chat panel - selalu terbuka karena hanya ada satu peserta */}
+                <div className={`chat-panel ${isChatOpen ? 'open' : ''}`}>
+                    <div className="chat-header">
+                        <h3>Chat</h3>
+                        <button className="close-chat" onClick={() => setIsChatOpen(false)}>
+                            <i className="fas fa-times"></i>
+                        </button>
                     </div>
-                )}
+                    <div className="chat-messages">
+                        {messages.length === 0 ? (
+                            <div className="no-messages">No messages yet</div>
+                        ) : (
+                            messages.map(msg => (
+                                <div key={msg.id} className={`chat-message ${msg.isSystem ? 'system-message' : ''}`}>
+                                    <div className="message-header">
+                                        <span className="message-sender">{msg.sender}</span>
+                                        <span className="message-time">{msg.time}</span>
+                                    </div>
+                                    <div className="message-text">{msg.text}</div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                    <form className="chat-input" onSubmit={sendMessage}>
+                        <input
+                            type="text"
+                            placeholder="Type a message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                        />
+                        <button type="submit">
+                            <i className="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
 
             {/* Emotion tracking indicator */}
@@ -690,6 +707,14 @@ function MeetingRoom() {
                     Leave
                 </button>
             </div>
+
+            {/* Overlay when leaving */}
+            {isLeaving && (
+                <div className="camera-off-overlay">
+                    <i className="fas fa-video-slash" style={{ fontSize: '48px' }}></i>
+                    <div className="camera-off-message">Camera Off - Leaving Meeting...</div>
+                </div>
+            )}
         </div>
     );
 }

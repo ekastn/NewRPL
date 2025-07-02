@@ -1,12 +1,12 @@
 /* Meeting Room Layout */
 .meeting-room {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #1a1a1a;
-    color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: white;
+  overflow: hidden; /* Mencegah konten keluar dari container */
 }
-
 .meeting-header {
     display: flex;
     justify-content: space-between;
@@ -22,31 +22,35 @@
 }
 
 .meeting-content {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
 }
-
 /* Participants Gallery */
 .participants-gallery {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden; /* Mencegah scroll */
 }
 
 .participants-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    grid-auto-rows: 1fr;
-    gap: 8px;
-    padding: 8px;
-    flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 2px; /* Mengurangi gap */
+  padding: 2px; /* Mengurangi padding */
+  flex: 1;
+  background-color: #1a1a1a; /* Warna background yang sama dengan meeting-room */
 }
 
+
 .participants-grid.with-pinned {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    grid-auto-rows: minmax(120px, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-auto-rows: minmax(120px, 1fr);
+  margin-top: 2px; /* Mengurangi gap antara pinned dan grid */
 }
 
 /* Make grid cells square */
@@ -65,25 +69,45 @@
 
 /* Pinned participant */
 .pinned-participant {
-    width: 100%;
-    height: 60%;  /* Take 60% of vertical space */
-    border-bottom: 1px solid #3a3a3a;
-    position: relative;
-    background-color: #2a2a2a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 60%;
+  position: relative;
+  background-color: #1a1a1a;
+  border-bottom: 2px solid #1a1a1a; /* Membuat border yang sama dengan background */
 }
+
 
 /* Participant tiles */
 .participant-tile {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #2a2a2a;
-    aspect-ratio: 4/3;
-    cursor: pointer;
+  position: relative;
+  border-radius: 4px; /* Mengurangi border radius */
+  overflow: hidden;
+  background-color: #2a2a2a;
+  aspect-ratio: 4/3;
+  cursor: pointer;
 }
+
+.unpin-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 100;
+  font-size: 12px;
+}
+
+.unpin-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
 
 .participant-tile img, 
 .pinned-participant img {
@@ -93,14 +117,35 @@
 }
 
 .video-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #2a2a2a;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2a2a2a;
+  overflow: hidden;
+}
+
+.camera-off-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 1000;
+}
+
+
+.camera-off-message {
+  margin-top: 10px;
+  font-size: 18px;
 }
 
 .current-user-video {
@@ -438,4 +483,121 @@ video.hidden {
 
 .emotion-indicator span {
     font-weight: 500;
+}
+
+.waiting-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 30px 50px;
+  border-radius: 10px;
+  z-index: 10;
+  width: 80%;
+  max-width: 400px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.waiting-message.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.waiting-message i {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: #6c5ce7;
+}
+
+.waiting-message h3 {
+  font-size: 22px;
+  margin: 0 0 10px 0;
+}
+
+.waiting-message p {
+  margin: 0 0 20px 0;
+  color: #ccc;
+}
+
+.copy-meeting-link {
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-meeting-link:hover {
+  background-color: #5a4ecc;
+}
+
+/* Meeting info section */
+.meeting-info {
+  display: flex;
+  align-items: center;
+}
+
+.copy-link-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-link-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* System message styling */
+.chat-message.system-message {
+  background-color: rgba(108, 92, 231, 0.1);
+  border-left: 3px solid #6c5ce7;
+}
+
+.chat-message.system-message .message-sender {
+  color: #6c5ce7;
+  font-weight: bold;
+}
+
+/* Make chat panel always visible if there's only one participant */
+.chat-panel {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-left: 1px solid #3a3a3a;
+  background-color: #2a2a2a;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 992px) {
+  .chat-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(100%);
+    z-index: 1000;
+  }
+  
+  .chat-panel.open {
+    transform: translateX(0);
+  }
 }
