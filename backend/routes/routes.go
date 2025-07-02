@@ -37,6 +37,13 @@ func SetupRoutes(app *fiber.App) {
     api.Get("/users/:id", controllers.GetUserById)
     api.Put("/users/:id", controllers.UpdateUser)
 
+    // Add these lines to your routes setup
+
+    // Emotion routes
+    app.Post("/api/emotions", controllers.SaveEmotion)
+    app.Get("/api/emotions/stats", controllers.GetEmotionStats)
+    app.Get("/api/emotions/user/:id", controllers.GetUserEmotions)
+
     // Upload profile image
     api.Post("/upload-profile-image", controllers.UploadProfileImage)
 
