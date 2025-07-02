@@ -396,27 +396,41 @@ function MeetingRoom() {
         // Tampilkan overlay dan matikan kamera
         setIsLeaving(true);
 
-        // Matikan video
+        // Matikan semua track video dan audio dan benar-benar lepaskan sumber daya
         if (streamRef.current) {
-            const videoTracks = streamRef.current.getVideoTracks();
-            videoTracks.forEach(track => {
+            // Untuk setiap track dalam stream, hentikan track tersebut
+            streamRef.current.getTracks().forEach(track => {
+                // Disable track terlebih dahulu
                 track.enabled = false;
+                // Kemudian benar-benar menghentikan track untuk melepaskan resource
+                track.stop();
             });
+
+            // Lepaskan referensi stream dari elemen video
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+            if (pinnedVideoRef.current) {
+                pinnedVideoRef.current.srcObject = null;
+            }
+
+            // Hapus referensi stream
+            streamRef.current = null;
         }
 
-        // Berikan waktu untuk menampilkan overlay "Camera Off"
+        // Hapus interval deteksi wajah
+        if (detectionIntervalRef.current) {
+            clearInterval(detectionIntervalRef.current);
+            detectionIntervalRef.current = null;
+        }
+
+        // Update state
+        setIsMuted(true);
+        setIsVideoOff(true);
+
+        // Beri waktu untuk menampilkan overlay "Camera Off" sebelum navigasi
         setTimeout(() => {
-            // Stop all tracks
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
-            }
-    
-            // Clear detection interval
-            if (detectionIntervalRef.current) {
-                clearInterval(detectionIntervalRef.current);
-            }
-    
-            // Navigate back to meetings
+            // Navigasi kembali ke halaman meetings
             navigate('/meetings');
         }, 1500);
     };

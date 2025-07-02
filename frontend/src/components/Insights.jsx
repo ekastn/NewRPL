@@ -260,6 +260,12 @@ function Insights() {
                     </div>
                 ) : (
                     <div className="insights-body">
+                        {/* Main Title */}
+                        <div className="insights-title">
+                            <h2>Emotional Intelligence Insights</h2>
+                            <p>Analyzing team emotional patterns and collaboration dynamics</p>
+                        </div>
+                        
                         {/* Team Mood Overview */}
                         <div className="team-mood-overview">
                             <div className="overview-header">
@@ -330,152 +336,7 @@ function Insights() {
                             )}
                         </div>
 
-                        {/* Main Title */}
-                        <div className="insights-title">
-                            <h2>Emotional Intelligence Insights</h2>
-                            <p>Analyzing team emotional patterns and collaboration dynamics</p>
-                        </div>
-
-                        {/* Metrics Cards */}
-                        <div className="metrics-container">
-                            <div className="metric-card">
-                                <div className="metric-icon happy">
-                                    <i className="fas fa-smile"></i>
-                                </div>
-                                <div className="metric-info">
-                                    <div className="metric-header">
-                                        <h3>Team Happiness</h3>
-                                        <div className="metric-value">
-                                            {metrics.happiness.value}% 
-                                            <span className={`trend ${metrics.happiness.trend_direction}`}>
-                                                {metrics.happiness.trend_direction === 'up' ? '↑' : '↓'} {metrics.happiness.trend}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="metric-description">
-                                        Overall positive emotions
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="metric-card">
-                                <div className="metric-icon collaboration">
-                                    <i className="fas fa-handshake"></i>
-                                </div>
-                                <div className="metric-info">
-                                    <div className="metric-header">
-                                        <h3>Collaboration Score</h3>
-                                        <div className="metric-value">
-                                            {metrics.collaboration.value}%
-                                            <span className={`trend ${metrics.collaboration.trend_direction}`}>
-                                                {metrics.collaboration.trend_direction === 'up' ? '↑' : '↓'} {metrics.collaboration.trend}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="metric-description">
-                                        Team synergy and cooperation
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="metric-card">
-                                <div className="metric-icon stress">
-                                    <i className="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <div className="metric-info">
-                                    <div className="metric-header">
-                                        <h3>Stress Indicators</h3>
-                                        <div className="metric-value">
-                                            {metrics.stress.value}%
-                                            <span className={`trend ${metrics.stress.trend_direction}`}>
-                                                {metrics.stress.trend_direction === 'up' ? '↑' : '↓'} {metrics.stress.trend}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="metric-description">
-                                        Detected stress patterns
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="metric-card">
-                                <div className="metric-icon communication">
-                                    <i className="fas fa-comments"></i>
-                                </div>
-                                <div className="metric-info">
-                                    <div className="metric-header">
-                                        <h3>Communication Health</h3>
-                                        <div className="metric-value">
-                                            {metrics.communication.value}%
-                                            <span className={`trend ${metrics.communication.trend_direction}`}>
-                                                {metrics.communication.trend_direction === 'up' ? '↑' : '↓'} {metrics.communication.trend}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="metric-description">
-                                        Effective team communication
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Charts Section */}
-                        <div className="charts-container">
-                            {/* Emotions Trend Chart */}
-                            <div className="chart-card full-width">
-                                <div className="chart-header">
-                                    <h3>Emotional Trends Over Time</h3>
-                                    <div className="chart-actions">
-                                        <button className="btn-expand"><i className="fas fa-expand"></i></button>
-                                        <button className="btn-download"><i className="fas fa-download"></i></button>
-                                    </div>
-                                </div>
-                                <div className="chart-content trend-chart">
-                                    {weeklyMood && weeklyMood.length > 0 ? (
-                                        <div className="chart-placeholder">
-                                            <img src="https://via.placeholder.com/1000x250?text=Emotional+Trends+Chart" alt="Emotional Trends" />
-                                        </div>
-                                    ) : (
-                                        <div className="chart-no-data">No data available</div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Two Column Charts */}
-                            <div className="charts-grid">
-                                <div className="chart-card">
-                                    <div className="chart-header">
-                                        <h3>Emotion Distribution</h3>
-                                        <div className="chart-actions">
-                                            <button className="btn-expand"><i className="fas fa-expand"></i></button>
-                                            <button className="btn-download"><i className="fas fa-download"></i></button>
-                                        </div>
-                                    </div>
-                                    <div className="chart-content">
-                                        {weeklyMood && weeklyMood.length > 0 ? (
-                                            <div className="chart-placeholder">
-                                                <img src="https://via.placeholder.com/480x250?text=Emotion+Distribution+Chart" alt="Emotion Distribution" />
-                                            </div>
-                                        ) : (
-                                            <div className="chart-no-data">No data available</div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="chart-card">
-                                    <div className="chart-header">
-                                        <h3>Meeting Emotional Impact</h3>
-                                        <div className="chart-actions">
-                                            <button className="btn-expand"><i className="fas fa-expand"></i></button>
-                                            <button className="btn-download"><i className="fas fa-download"></i></button>
-                                        </div>
-                                    </div>
-                                    <div className="chart-content">
-                                        <div className="chart-no-data">No data available</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                 )}
             </div>
