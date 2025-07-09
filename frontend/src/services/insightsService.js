@@ -1,12 +1,10 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api';
+import api from './api';
 
 export const insightsService = {
     // Get emotion stats by period (today, week, month)
     getEmotionStats: async (period) => {
         try {
-            const response = await axios.get(`${API_URL}/emotions/stats`, {
+            const response = await api.get(`/emotions/stats`, {
                 params: { period },
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -38,7 +36,7 @@ export const insightsService = {
     // Get team metrics (happiness, collaboration, stress, communication)
     getTeamMetrics: async (period) => {
         try {
-            const response = await axios.get(`${API_URL}/emotions/metrics`, {
+            const response = await api.get(`/emotions/metrics`, {
                 params: { period },
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -75,7 +73,7 @@ export const insightsService = {
     // Get chart data for emotional trends
     getEmotionalTrendsData: async (period) => {
         try {
-            const response = await axios.get(`${API_URL}/emotions/trends`, {
+            const response = await api.get(`/emotions/trends`, {
                 params: { period },
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -107,7 +105,7 @@ export const insightsService = {
     // Get emotion distribution data
     getEmotionDistribution: async (period) => {
         try {
-            const response = await axios.get(`${API_URL}/emotions/distribution`, {
+            const response = await api.get(`/emotions/distribution`, {
                 params: { period },
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -126,7 +124,7 @@ export const insightsService = {
     // Get meeting emotional impact data
     getMeetingEmotionalImpact: async () => {
         try {
-            const response = await axios.get(`${API_URL}/meetings/emotional-impact`, {
+            const response = await api.get(`/meetings/emotional-impact`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             return response.data;

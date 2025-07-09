@@ -12,7 +12,7 @@ function MyTeam() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRole, setSelectedRole] = useState('All Roles');
 
-    const API_URL = 'http://localhost:8080';
+    
     
     // Helper function untuk mendapatkan inisial nama
     const getInitial = (name) => {

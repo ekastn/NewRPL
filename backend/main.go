@@ -50,10 +50,10 @@ func main() {
 
 	// Konfigurasi CORS yang benar
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173", // Mengizinkan semua asal
+		AllowOrigins:     "*", // Mengizinkan semua asal
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowCredentials: true,
+		AllowCredentials: false,
 		ExposeHeaders:    "Content-Length, Content-Disposition",
 	}))
 

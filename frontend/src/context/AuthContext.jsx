@@ -1,8 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import { getCurrentUser } from '../services/authService';
 
-// Tambahkan base URL API
-const API_URL = 'http://localhost:8080';
+import api from '../services/api';
 
 export const AuthContext = createContext();
 
@@ -15,9 +14,8 @@ export const AuthProvider = ({ children }) => {
         if (!userData) return userData;
         
         const newUserData = {...userData};
-        // Perbaikan: cek jika imageUrl dimulai dengan /uploads
         if (newUserData.profileImage && newUserData.profileImage.startsWith('/uploads')) {
-            newUserData.profileImage = API_URL + newUserData.profileImage;
+            newUserData.profileImage = api.defaults.baseURL + newUserData.profileImage;
         }
         return newUserData;
     };

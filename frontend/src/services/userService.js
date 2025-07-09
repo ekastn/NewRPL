@@ -1,36 +1,17 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080';
-
-// Create axios instance
-const api = axios.create({
-    baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
-
-// Add token to requests if it exists
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+import api from './api';
 
 // Get all users
 // Get all users
 export const getUsers = async () => {
     try {
-        console.log('Fetching users from:', API_URL + '/users');
+        console.log('Fetching users from:', api.defaults.baseURL + '/users');
         const response = await api.get('/users');
         console.log('API response:', response);
         
         // Tambahkan baseURL ke profileImage jika ada
         const users = response.data.map(user => {
             if (user.profileImage && !user.profileImage.startsWith('http')) {
-                user.profileImage = API_URL + user.profileImage;
+                user.profileImage = api.defaults.baseURL + user.profileImage;
             }
             return user;
         });
@@ -66,7 +47,7 @@ export const getUserById = async (userId) => {
         // Tambahkan baseURL ke profileImage jika ada
         const user = response.data;
         if (user.profileImage && !user.profileImage.startsWith('http')) {
-            user.profileImage = API_URL + user.profileImage;
+            user.profileImage = api.defaults.baseURL + user.profileImage;
         }
         
         return user;
@@ -103,21 +84,21 @@ export const uploadProfileImage = async (formData) => {
         }
         
         const uploadInstance = axios.create({
-            baseURL: API_URL,
+            baseURL: api.defaults.baseURL,
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             }
         });
         
-        console.log('Uploading to:', API_URL + '/api/upload-profile-image');
+        console.log('Uploading to:', api.defaults.baseURL + '/api/upload-profile-image');
         const response = await uploadInstance.post('/api/upload-profile-image', formData);
         
         console.log('Upload response:', response.data);
         
         // Ensure imageUrl is full URL
         if (response.data.imageUrl && response.data.imageUrl.startsWith('/uploads')) {
-            response.data.imageUrl = API_URL + response.data.imageUrl;
+            response.data.imageUrl = api.defaults.baseURL + response.data.imageUrl;
             console.log('Image URL with domain:', response.data.imageUrl);
         }
         

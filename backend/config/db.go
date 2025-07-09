@@ -25,6 +25,7 @@ func ConnectDB() {
 	mongoString := os.Getenv("MONGOSTRING")
 	dbName := os.Getenv("DB_NAME")
 	userCollection := os.Getenv("USER_COLLECTION")
+	log.Println("📚 Loading database configuration from environment variables", mongoString, dbName, userCollection)
 
 	if mongoString == "" {
 		mongoString = "mongodb://localhost:27017"

@@ -99,9 +99,6 @@ function Settings() {
 
                     // Pastikan imageUrl lengkap dengan domain
                     let imageUrl = uploadResult.imageUrl;
-                    if (imageUrl && imageUrl.startsWith('/uploads')) {
-                        imageUrl = 'http://localhost:8080' + imageUrl;
-                    }
 
                     // Update user data
                     const updatedData = {
